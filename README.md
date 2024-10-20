@@ -1,6 +1,6 @@
 <div align=justify>
 
-# Monster Hunter - Juego
+# Monster Hunter - Juego V1
 
 <div align=center>
     <img src="./img/image.png" width=370px heigth="auto">
