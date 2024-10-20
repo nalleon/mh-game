@@ -112,8 +112,8 @@ En esta versión del juego la clase Hunter es el único hilo.
     ```
 
 - __Clase `MapGame`__: Define el tamaño del mapa, las posiciones iniciales de los cazadores y los monstruos (además del movimiento del primero) así como las acciones que ocurren en cada casilla.
-- Contenido:
-
+    - Contenido:
+    
     ```code
 
         // Propiedades
@@ -174,11 +174,11 @@ En esta versión del juego la clase Hunter es el único hilo.
 ***
 </br>
 
-### 3. Soluciones 
+### 3. Soluciones
 
-1. **Control de movimiento aleatorio de cazadores**: Se ha implementado una función para que los cazadores se desplacen de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
+1. **Control de movimiento aleatorio de cazadores**: Implementación del movimiento de los cazadores de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
    
-2. **Tiempo límite para la partida**: Tras un número de turnos predefinido, los monstruos huyen y el juego finaliza. Esta solución introduce un tiempo límite para que los cazadores encuentren a los monstruos.
+2. **Tiempo límite para la partida**: Tras un tiempo determinado, los monstruos huyen y el juego finaliza. Esta solución introduce un tiempo límite para que los cazadores encuentren a los monstruos.
 
 3. **Escalabilidad del mapa**: El usuario puede definir el tamaño del mapa al inicio del juego, lo que permite una mayor flexibilidad y adaptabilidad de la simulación.
 
@@ -188,7 +188,136 @@ En esta versión del juego la clase Hunter es el único hilo.
 ### 4. Salida de la ejecucución
 
 ```code
-work in progress
+ .  .  .  M  .  
+ .  .  .  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ H  .  H  .  .  
+ 
+ .  .  .  M  .  
+ .  .  .  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  H  .  H  
+ 
+ .  .  .  M  .  
+ .  .  .  M  .  
+ .  H  .  .  .  
+ .  .  .  .  .  
+ .  .  H  .  .  
+ 
+ .  .  .  M  .  
+ .  H  .  M  .  
+ .  H  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  M  .  
+ .  .  .  M  .  
+ .  H  .  H  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  M  H  
+ .  .  .  M  .  
+ .  .  .  H  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  M  H  
+ H  .  .  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  M  .  
+ H  .  .  M  .  
+ .  .  .  .  .  
+ H  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  M  .  
+ .  .  .  M  .  
+ .  .  .  .  .  
+ H  .  .  .  .  
+ H  .  .  .  .  
+ 
+ .  .  .  H  .  
+ .  .  .  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ H  .  .  .  .  
+ 
+Hunter2 caught Monster2
+ .  .  .  H  .  
+ .  H  .  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  H  .  M  .  
+ .  .  H  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  H  .  .  
+ .  H  .  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  H  .  .  
+ .  .  .  M  .  
+ .  H  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  .  M  .  
+ .  H  .  .  .  
+ .  .  .  H  .  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  .  M  .  
+ .  .  H  .  .  
+ .  .  .  H  .  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  .  M  .  
+ .  .  H  .  .  
+ .  .  .  .  .  
+ .  H  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  H  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  H  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  H  M  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  H  .  
+ 
+ .  .  .  .  .  
+ .  .  .  M  .  
+ .  .  .  .  H  
+ .  .  .  .  .  
+ .  .  .  H  .  
+ 
+ .  .  .  .  .  
+ .  .  .  M  .  
+ .  .  .  H  H  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+Monster1 has fled the field!
+
+Process finished with exit code 0
 ```
 
 ***
