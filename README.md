@@ -12,6 +12,4 @@
 - [Versión 2.](https://github.com/nalleon/mh-game/tree/v2)
 - [Versión 3.](https://github.com/nalleon/mh-game/tree/v3)
 
-
-
 </div>
