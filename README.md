@@ -24,11 +24,11 @@ Segunda versión del juego. En esta versión, los monstruos también se mueven y
 #### 1.1 Ejemplo del flujo
 
 > ***
-> - Hay 2 monstruos y 2 cazadores
+> - Hay 2 monstruos y 2 cazadores.
 >
 > - Según el tamaño del mapa aparecen un numero de trampas en este delimitadas por el tamaño total entre 2 (ej: si el mapa tiene tamaño 5 (5x5) habrán 2 trampas). Estas trampas son unas minas que matarán a quien las pise. Una vez activadas, desaparecen.
 >
-> - Los monstruos se mueven también de manera aleatoria
+> - Los monstruos se mueven también de manera aleatoria.
 >
 > - Si un cazador encuentra un monstruo este tiene un 70% de probabilidades de capturarlo, si falla el cazador huirá a otra posición y reportará la posición del enemigo a los otros cazadores.
 > 
@@ -274,7 +274,11 @@ En esta versión la clase Hunter y Monster son 2 hilos.
    
 1. **Control de movimiento aleatorio de monstruos**: Implementación del movimiento de los monstruo de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
 
-2. **Control de posiciones**: Implementación de consecuencias al estar en la posición de una trampa.
+2. **Acción de los monstruos**: Implementación del ataque de los monstruos si estos son quienes encuentran a los cazadores.ç
+
+3. **Comunicación entre cazadores**: Implementación de una lista de posiciones donde hay monstruos conocidas por al menos un cazador.
+
+4. **Control de trampas**: Implementación de consecuencias al estar en la posición de una trampa.
 
 ***
 </br>
