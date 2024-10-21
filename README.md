@@ -11,9 +11,9 @@
 ## Índice
 
 - 1.[ Descripción](#1-descripción)
-    - 1.1[ Desarrollo del juego](#11-desarrollo-del-juego)
-- 2.[ Implemenatcion del código](#2-implementación)
-- 3.[ Soluciones aportadas](#3-soluciones)
+    - 1.1[ Ejemplo de flujo](#11-ejemplo-de-flujo)
+- 2.[ Implemenatcion del código](#2-implementación-del-código)
+- 3.[ Soluciones aportadas](#3-soluciones-aportadas)
 - 4.[ Salida de la ejecución](#4-salida-de-la-ejecucución)
 
 
@@ -21,24 +21,25 @@
 
 Pequeño juego de simulación donde cazadores y monstruos interactúan en un mapa definido por el usuario. El objetivo es que los cazadores capturen la mayor cantidad de monstruos posibles en un tiempo determinado.
 
-#### 1.1 Desarrollo del juego
+#### 1.1 Ejemplo de flujo
 
 > ***
+>
 > - El mapa por defecto tiene un tamaño de 10x10, pero se puede seleccionar un tamaño en específico.
 >
 > - Los cazadores se mueven a una cantidad de casillas aleatorias dentro de el tamaño del mapa definido por las posiciones x,y.
 >
 > - Los monstruos no realizan ningún tipo de movimiento.
-> 
+>
+> - La partida termina una vez no queden montruos, ya sean porque han sido cazados o porque han huido después de un tiempo.
+>
 > ***
 
-***
-</br>
 
 ***
 </br>
 
-### 2. Implementación 
+### 2. Implementación del código
 
 En esta versión del juego la clase Hunter es el único hilo.
 
@@ -74,7 +75,55 @@ En esta versión del juego la clase Hunter es el único hilo.
 
         // Run
         @Override
-        public void run() {}
+        public void run() {
+            long initialTime = System.currentTimeMillis();
+            long timePassed = 0;
+
+            int monsterCaught = 0;
+            boolean isOver = false;
+
+            mapGame.addHunter(this, this.getPosition());
+
+            while (!isOver && !mapGame.getMonsters().isEmpty() && timePassed < TIME_TO_CATCH) {
+                mapGame.moveHunter(this);
+
+                long endTime = System.currentTimeMillis();
+                timePassed = (endTime - initialTime);
+
+                if (timePassed >= TIME_TO_CATCH){
+                    System.out.println("Time is up!");
+                    System.out.println(hunterName + " caught " + monsterCaught + " monsters");
+                    isOver = true;
+                }
+
+
+                for (Monster monster : mapGame.getMonsters()) {
+                    if (monster.getPosition().equals(this.getPosition()) && !monster.isCaptured()) {
+                        monster.setCaptured(true);
+                        System.out.println(this.getHunterName() + " caught " + monster.getMonsterName());
+                        mapGame.removeMonster(monster, monster.getPosition());
+                        mapGame.getMonsters().remove(monster);
+                        monsterCaught++;
+                        break;
+                    }
+                }
+
+                for (Monster monster : mapGame.getMonsters()) {
+                    if (!monster.isCaptured() && timePassed >= 10000 && timePassed < TIME_TO_CATCH) {
+                        mapGame.removeMonster(monster, monster.getPosition());
+                        System.out.println(monster.getMonsterName() + " has fled the field!");
+                    }
+                }
+
+
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println(hunterName + " interrupted");
+                }
+            }
+        }
 
         // Equals y toString
     ```
@@ -174,13 +223,13 @@ En esta versión del juego la clase Hunter es el único hilo.
 ***
 </br>
 
-### 3. Soluciones
+### 3. Soluciones aportadas
 
-1. **Control de movimiento aleatorio de cazadores**: Implementación del movimiento de los cazadores de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
-   
-2. **Tiempo límite para la partida**: Tras un tiempo determinado, los monstruos huyen y el juego finaliza. Esta solución introduce un tiempo límite para que los cazadores encuentren a los monstruos.
+1. __Control de movimiento aleatorio de cazadores__: Implementación del movimiento de los cazadores de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
 
-3. **Escalabilidad del mapa**: El usuario puede definir el tamaño del mapa al inicio del juego, lo que permite una mayor flexibilidad y adaptabilidad de la simulación.
+2. __Tiempo límite para la partida__: Tras un tiempo determinado, los monstruos huyen y el juego finaliza. Esta solución introduce un tiempo límite para que los cazadores encuentren a los monstruos.
+
+3. __Tiempo límite para la huida__: Una vez pasa una cierta cantidad de tiempo inferior al tiempo máximo los monstruos comenzarán a huir.
 
 ***
 </br>
