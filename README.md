@@ -19,12 +19,13 @@
 
 ### 1. Descripción
 
-Tercera versión del juego. En esta versión,añadimos la creación de cuevas donde los monstruos se pueden esconder. Una cueva permite la capacidad total de un monstruo.
+Tercera versión del juego. En esta versión, añadimos la creación de una cueva donde los monstruos se pueden esconder. Una cueva permite la capacidad total de un monstruo.
 
 #### 1.1 Ejemplo del flujo
 
 > ***
-> - Hay 2 monstruos y 2 cazadores
+>
+> - Hay 3 monstruos y 2 cazadores
 >
 > - Según el tamaño del mapa aparecen un numero de trampas en este delimitadas por el tamaño total entre 2 (ej: si el mapa tiene tamaño 5 (5x5) habrán 2 trampas). Estas trampas son unas minas que matarán a quien las pise. Una vez activadas, desaparecen.
 >
@@ -33,6 +34,10 @@ Tercera versión del juego. En esta versión,añadimos la creación de cuevas do
 > - Si un cazador encuentra un monstruo este tiene un 70% de probabilidades de capturarlo, si falla el cazador huirá a otra posición y reportará la posición del enemigo a los otros cazadores.
 > 
 > - Si un monstruo en cambio es quien encuentra un cazador este atacará a su oponente teniendo un 70% de probabilidades de derrotarlo, en el caso contrario huirá a otra posición.
+>
+> - En el mapa de genera una cueva en una posición aleatoria. Los monstruos se moveran a esta, pero en una cueva solo cabe un monstruo.
+>
+> - Si la posición de un cazador es cercana a la de una cueva (2 o menos de diferencia en x,y) este se movera aún la posición más cercana y libre a esta.
 >
 > ***
 
@@ -58,12 +63,11 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         private String position;
         private MapGame mapGame;
         private static long TIME_TO_CATCH = 20000;
-
         private boolean isDefeated = false;
-
         private int monsterCaught = 0;
+        private Cave cave;
+        private List<String> failedPositons;
 
-    private List<String> failedPositons;
 
         // Constructor por defecto
         public Hunter (){
@@ -105,6 +109,14 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 
                 mapGame.moveHunter(this);
 
+                if (mapGame.nearCave(this)){
+                    try {
+                        Thread.sleep(4000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -121,7 +133,7 @@ En esta versión la clase Hunter y Monster son 2 hilos.
     ```
 
 - __Clase `Monster`__: Define el objeto para los monstruos.
-     - Contenido:
+    - Contenido:
 
     ```code
         extends Thread
@@ -134,6 +146,7 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         private MapGame mapGame;
         private static long TIME_TO_ESCAPE = 20000;
         private int huntersDefeated = 0;
+        private Cave cave;
 
         // Constructor por defecto
         public Monster() {
@@ -142,15 +155,17 @@ En esta versión la clase Hunter y Monster son 2 hilos.
             position = "";
             captured = false;
             mapGame = new MapGame();
+            cave = new Cave();
         }
 
-        // Constructor con el id y el nombre
-        public Monster(int monsterId, String monsterName) {
+        // Constructor con el id, el nombre y el mapa
+        public Monster(int monsterId, String monsterName, MapGame mapGame) {
             this.monsterId = monsterId;
             this.monsterName = monsterName;
             position = "";
             captured = false;
-            mapGame = new MapGame();
+            this.mapGame = mapGame;
+            cave = new Cave();
         }
 
         // Run
@@ -197,8 +212,9 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 
         // Equals y toString
     ```
+
 - __Clase `Cave`__: Define el objeto para las cuevas.
-     - Contenido:
+    - Contenido:
 
     ```code
         private final Semaphore semaphore;
@@ -229,7 +245,7 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         // Equals y toString
     ```
 
-- __Clase `MapGame`__: Define el tamaño del mapa, las posiciones iniciales de los cazadores y los monstruos (además del movimiento del primero) así como las acciones que ocurren en cada casilla.
+- __Clase `MapGame`__: Define el tamaño del mapa, las posiciones iniciales de las trampas, cuevas, cazadores y monstruos así cómo los movimientos de estos 2 ultimos, y como las acciones que ocurren en cada posición.
     - Contenido:
     
     ```code
@@ -237,12 +253,14 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         // Propiedades
         private int size;
         private ConcurrentHashMap<String, String> locations;
-
         private static final int DEFAULT_SIZE = 10;
         private String [][] map;
-
         private List<Monster> monsters;
         private List<Hunter> hunters;
+        private BlockingQueue<String> monstersPositionsQueue;
+        private String typeTraps = "mine";
+        private Set<Monster> monstersInCave;
+    
 
         // Constructor por defecto
         public MapGame() {
@@ -251,6 +269,8 @@ En esta versión la clase Hunter y Monster son 2 hilos.
             map = new String[size][size];
             monsters = new CopyOnWriteArrayList<>();
             hunters = new CopyOnWriteArrayList<>();
+            monstersPositionsQueue = new LinkedBlockingQueue<>();
+            monstersInCave = ConcurrentHashMap.newKeySet();
             generateMap();
         }
 
@@ -261,10 +281,14 @@ En esta versión la clase Hunter y Monster son 2 hilos.
             map = new String[size][size];
             monsters = new CopyOnWriteArrayList<>();
             hunters = new CopyOnWriteArrayList<>();
+            monstersPositionsQueue = new LinkedBlockingQueue<>();
+            monstersInCave = ConcurrentHashMap.newKeySet();
             generateMap();
         }
 
-        // Función para generar las localizaciones
+
+        // Funciones
+    
         public String generateLocations(){}
 
         public void generateMap() {}
@@ -292,6 +316,7 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 
         public synchronized void fightHunter(List<Hunter> hunters, Monster monster) {}
 
+        public synchronized boolean nearCave(Hunter hunter){}
 
         // Getters y setters
 
@@ -302,11 +327,10 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 </br>
 
 ### 3. Soluciones añadidas
-   
-1. **Control de entrada y salida**: Implementación de la entrada y salida 
 
+1. __Control de entrada y salida de las cuevas__: Implementación de la entrada y salida de un monstruo de de la cueva por medio de un semáforo.
 
-2. **Control de posiciones**: Implementación de consecuencias al estar en la posición de una trampa.
+2. __Patrullas de las cuevas__: Implementación del movimiento de los cazadores a la cueva ocupada más cercana si estos se encuentran en un rango cercano. 
 
 ***
 </br>
@@ -314,7 +338,160 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 ### 4. Salida de la ejecucución
 
 ```code
-work in progress
+ H  .  .  M  M  
+ .  .  M  .  .  
+ .  H  .  .  x  
+ .  .  c  x  .  
+ .  .  .  .  .  
+ 
+ H  .  .  .  M  
+ .  .  M  .  .  
+ .  H  .  .  x  
+ .  M  c  x  .  
+ .  .  .  .  .  
+ 
+Hunter2 has landed on a mine and died
+ H Monster1 has entered the cave.
+ .  .  .  M  
+ .  .  M  .  .  
+ .  .  .  .  x  
+ .  .  c  .  .  
+ .  .  .  .  .  
+ 
+Hunter2(0,3) patrolling near the cave at 1,3
+ H  .  .  H  M  
+ .  .  .  .  .  
+ M  .  .  .  x  
+ .  .  c  .  .  
+ .  .  .  .  .  
+ 
+ H  .  .  H  .  
+ .  .  .  .  .  
+ M  .  .  .  x  
+ .  .  c  .  .  
+ .  .  .  .  M  
+ 
+ .  .  .  H  .  
+ .  .  .  .  .  
+ M  H  .  .  x  
+ .  .  c  .  .  
+ .  .  .  .  M  
+ 
+Hunter1(0,3) patrolling near the cave at 1,3
+ .  .  .  H  .  
+ .  .  .  .  .  
+ M  .  .  .  x  
+ .  .  c  .  .  
+ .  .  M  .  .  
+ 
+ M  .  .  H  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ .  .  c  .  .  
+ .  .  M  .  .  
+ 
+Monster1 has exited the cave.
+Hunter2 caught: 0 monsters
+ M  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ .  M  c  .  H  
+ .  .  M  .  .  
+ 
+ M  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ .  M  c  .  H  
+ M  .  .  .  .  
+ 
+Monster3 has entered the cave.
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  M  x  
+ .  M  c  .  H  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  M  x  
+ .  .  c  .  H  
+ .  .  .  M  .  
+ 
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  H  M  x  
+ .  .  c  .  .  
+ .  .  .  M  .  
+ 
+Hunter1(1,2) patrolling near the cave at 1,3
+ .  .  .  .  .  
+ .  .  H  .  .  
+ M  .  .  .  x  
+ .  .  c  .  .  
+ .  .  .  M  .  
+ 
+ .  .  .  .  .  
+ .  .  H  .  .  
+ M  .  .  M  x  
+ .  .  c  .  .  
+ .  .  .  .  .  
+ 
+Monster1 has fled the field!
+Monster3 has exited the cave.
+Hunter1 failed to catch Monster2
+ .  H  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ .  .  c  .  .  
+ M  .  .  .  .  
+ 
+ .  H  .  .  .  
+ .  .  .  .  .  
+ H  .  .  .  x  
+ .  .  c  .  .  
+ M  .  .  .  .  
+ 
+ .  H  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ M  .  c  .  .  
+ M  .  .  .  .  
+ 
+Monster2 has entered the cave.
+Monster1 defeated: 0 hunters
+ .  H  .  .  .  
+ .  .  .  .  .  
+ .  .  M  .  x  
+ .  .  c  .  .  
+ .  .  .  .  .  
+ 
+Monster3 has fled the field!
+Hunter1 has been informed about a monster at: 2,0
+ .  .  .  .  .  
+ .  .  .  .  .  
+ H  .  .  .  x  
+ .  .  c  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ .  .  c  .  .  
+ .  H  .  .  .  
+ 
+ .  .  H  .  .  
+ .  .  .  .  .  
+ .  .  .  .  x  
+ .  .  c  .  .  
+ .  .  .  .  .  
+ 
+Hunter1(1,2) patrolling near the cave at 1,3
+Monster3 defeated: 0 hunters
+Monster2 has exited the cave.
+Monster2 has fled the field!
+Monster2 defeated: 0 hunters
+Hunter1 caught: 0 monsters
+
 ```
 
 
