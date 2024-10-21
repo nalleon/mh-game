@@ -206,12 +206,12 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         // Propiedades
         private int size;
         private ConcurrentHashMap<String, String> locations;
-
         private static final int DEFAULT_SIZE = 10;
         private String [][] map;
-
         private List<Monster> monsters;
         private List<Hunter> hunters;
+         private BlockingQueue<String> monstersPositionsQueue;
+        private String typeTraps = "mine";
 
         // Constructor por defecto
         public MapGame() {
@@ -220,6 +220,7 @@ En esta versión la clase Hunter y Monster son 2 hilos.
             map = new String[size][size];
             monsters = new CopyOnWriteArrayList<>();
             hunters = new CopyOnWriteArrayList<>();
+            monstersPositionsQueue = new LinkedBlockingQueue<>();
             generateMap();
         }
 
@@ -230,6 +231,7 @@ En esta versión la clase Hunter y Monster son 2 hilos.
             map = new String[size][size];
             monsters = new CopyOnWriteArrayList<>();
             hunters = new CopyOnWriteArrayList<>();
+            monstersPositionsQueue = new LinkedBlockingQueue<>();
             generateMap();
         }
 
@@ -248,7 +250,6 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 
         public synchronized void moveMonster(Monster monster){}
 
-
         public synchronized void addMonster(Monster monster){}
 
         public synchronized void removeMonsterFromMap(Hunter hunter, Monster monster){}
@@ -260,7 +261,6 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         public synchronized void catchMonster(List<Monster> monsters, Hunter hunter) {}
 
         public synchronized void fightHunter(List<Hunter> hunters, Monster monster) {}
-
 
         // Getters y setters
 
@@ -286,36 +286,6 @@ En esta versión la clase Hunter y Monster son 2 hilos.
 ### 4. Salida de la ejecucución
 
 ```code
- .  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- 
- H  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- 
- H  .  .  .  .  
- .  .  .  .  .  
- H  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- 
- H  .  .  .  .  
- .  .  .  .  M  
- H  .  .  .  .  
- .  .  .  .  .  
- .  .  .  .  .  
- 
- H  .  .  .  .  
- .  .  .  .  M  
- H  .  .  .  .  
- .  M  .  .  .  
- .  .  .  .  .  
- 
  .  .  .  .  .  
  .  .  H  .  M  
  H  .  x  .  .  
