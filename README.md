@@ -16,7 +16,6 @@
 - 3.[ Soluciones aportadas](#3-soluciones-añadidas)
 - 4.[ Salida de la ejecución](#4-salida-de-la-ejecucución)
 
-
 ### 1. Descripción
 
 Segunda versión del juego. En esta versión, los monstruos también se mueven y pueden atacar los cazadores jugando con las probabilidades. Además en el mapa abran unas minas que perjudicarán aquel que caiga en ellas.
@@ -58,12 +57,9 @@ En esta versión la clase Hunter y Monster son 2 hilos.
         private String position;
         private MapGame mapGame;
         private static long TIME_TO_CATCH = 20000;
-
         private boolean isDefeated = false;
-
         private int monsterCaught = 0;
-
-    private List<String> failedPositons;
+        private List<String> failedPositons;
 
         // Constructor por defecto
         public Hunter (){
