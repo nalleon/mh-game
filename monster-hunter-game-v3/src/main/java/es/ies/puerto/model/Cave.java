@@ -1,13 +1,21 @@
 package es.ies.puerto.model;
 
 import java.util.concurrent.Semaphore;
-
+/**
+ * @author Nabil L.A.
+ */
 public class Cave {
+    /**
+     * Properties
+     */
     private final Semaphore semaphore;
     int capacity;
     String position;
     boolean occupied;
 
+    /**
+     * Default constructor of the class
+     */
     public Cave() {
         this.capacity =1;
         this.position = "0,0";
@@ -15,12 +23,19 @@ public class Cave {
         this.occupied = false;
     }
 
+    /**
+     * Constructor of the class
+     */
     public Cave(int capacity, String position) {
         this.capacity = capacity;
         this.position = position;
         this.semaphore = new Semaphore(capacity);
         this.occupied = false;
     }
+
+    /**
+     * Function to enter a cave
+     */
 
     public synchronized void enterCave(Monster monster, MapGame mapGame) throws InterruptedException {
         semaphore.acquire();
@@ -33,6 +48,9 @@ public class Cave {
         System.out.println(monster.getMonsterName() + " has entered the cave.");
     }
 
+    /**
+     * Function to exit a cave
+     */
     public synchronized void exitCave(Monster monster, MapGame mapGame) {
         semaphore.release();
         mapGame.removeMonsterFromCave(monster);

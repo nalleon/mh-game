@@ -76,6 +76,10 @@ public class MapGame {
         return location;
     }
 
+  /**
+     * Function to generate the map
+     */
+
     private void generateMap() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -84,6 +88,9 @@ public class MapGame {
         }
     }
 
+    /**
+     * Function to show the map
+     */
     public void showMap(){
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -94,6 +101,9 @@ public class MapGame {
         System.out.println(" ");
     }
 
+    /**
+     * Funtion to generate the events on the map
+     */
 
     public synchronized void addEvents(String type, int eventsToAdd){
         int eventsAdded = 0;
@@ -112,6 +122,10 @@ public class MapGame {
 
     }
 
+    /**
+     * Funtion to generate the caves on the map
+     */
+
     public synchronized void addCaves (int cavesToAdd){
         int cavesAdded = 0;
 
@@ -128,6 +142,9 @@ public class MapGame {
         }
     }
 
+    /**
+     * Function to move the hunter to a new location in the map
+     */
     public synchronized void moveHunter(Hunter hunter){
         Random random = new Random();
         int y;
@@ -185,6 +202,9 @@ public class MapGame {
 
     }
 
+     /**
+     * Function to move the monster to a new location in the map
+     */
     public synchronized void moveMonster(Monster monster){
         Random random = new Random();
         int y = random.nextInt(size);
@@ -221,10 +241,17 @@ public class MapGame {
         }
     }
 
+    /**
+     * Function to check if position are overlapping
+     */
     public boolean checkPositionsOverlap(String position){
         return !locations.containsValue(position);
     }
 
+
+     /**
+     * Function to add a Hunter to the map
+     */
     public synchronized void addHunter(Hunter hunter, String location){
         if (checkPositionsOverlap(location)) {
             hunters.add(hunter);
@@ -237,6 +264,10 @@ public class MapGame {
             showMap();
         }
     }
+
+    /**
+     * Function to add a Monster to the map
+     */
     public synchronized void addMonster(Monster monster,  String location){
         if (checkPositionsOverlap(location)) {
             monsters.add(monster);
@@ -251,7 +282,9 @@ public class MapGame {
     }
 
 
-
+    /**
+     * Function to remove a monster from the map
+     */
     public synchronized void removeMonsterFromMap(Hunter hunter, Monster monster){
         String[] positions = monster.getPosition().split(",");
         int row = Integer.parseInt(positions[0]);
@@ -268,6 +301,9 @@ public class MapGame {
         locations.put(hunter.getHunterName(), hunter.getPosition());
     }
 
+    /**
+     * Function to remove a monster from the map when it escapes
+     */
     public synchronized void monsterFleeFromMap(Monster monster){
         String[] positions = monster.getPosition().split(",");
         int row = Integer.parseInt(positions[0]);
@@ -278,6 +314,10 @@ public class MapGame {
         monsters.remove(monster);
     }
 
+
+    /**
+     * Function to catch a Monster if a hunter moved to its position
+     */
     public synchronized void removeHunterFromMap(Hunter hunter, Monster monster){
         String[] positions = hunter.getPosition().split(",");
         int row = Integer.parseInt(positions[0]);
@@ -294,6 +334,10 @@ public class MapGame {
         locations.put(monster.getMonsterName(), monster.getPosition());
     }
 
+
+     /**
+     * Function to catch a Monster if a hunter moved to its position
+     */
     public synchronized boolean catchMonster(List<Monster> monsters, Hunter hunter) {
         if (!hunters.contains(hunter)){
             return false;
@@ -325,6 +369,9 @@ public class MapGame {
         return false;
     }
 
+    /**
+     * Function to figth a Hunter if a Monster moved to its position
+     */
     public synchronized void fightHunter(List<Hunter> hunters, Monster monster) {
         if (!monsters.contains(monster)){
             return;
@@ -351,19 +398,35 @@ public class MapGame {
         }
     }
 
+    /**
+     * Function to add a monster to the caves list
+     */
+
     public synchronized void addMonsterToCave(Monster monster) {
         monstersInCave.add(monster);
     }
+
+    
+    /**
+     * Function to remove a monster to the caves list
+     */
 
     public synchronized void removeMonsterFromCave(Monster monster) {
         monstersInCave.remove(monster);
     }
 
+
+    /**
+     * Function to check if a monster is in a cave from the list
+    */
     public boolean isMonsterInCave(Monster monster) {
         return monstersInCave.contains(monster);
     }
 
 
+    /**
+     * Function to check if a hunter is near an occupied cave
+     */
     public synchronized boolean nearCave(Hunter hunter){
         String[] positions = hunter.getPosition().split(",");
         int x = Integer.parseInt(positions[0]);
