@@ -1,6 +1,6 @@
 <div align=justify>
 
-# Monster Hunter - Juego V1
+# Monster Hunter - Juego V2
 
 > ✒️ __Autor__: Nabil L.A. (@nalleon)
 
@@ -11,25 +11,29 @@
 ## Índice
 
 - 1.[ Descripción](#1-descripción)
-    - 1.1[ Desarrollo del juego](#11-desarrollo-del-juego)
-- 2.[ Implemenatcion del código](#2-implementación)
-- 3.[ Soluciones aportadas](#3-soluciones)
+    - 1.1[ Ejemplo de flujo](#11-ejemplo-del-flujo)
+- 2.[ Implementación del código](#2-implementación-del-código)
+- 3.[ Soluciones aportadas](#3-soluciones-añadidas)
 - 4.[ Salida de la ejecución](#4-salida-de-la-ejecucución)
 
 
 ### 1. Descripción
 
-Pequeño juego de simulación donde cazadores y monstruos interactúan en un mapa definido por el usuario. El objetivo es que los cazadores capturen la mayor cantidad de monstruos posibles en un tiempo determinado.
+Segunda versión del juego. En esta versión, los monstruos también se mueven y pueden atacar los cazadores jugando con las probabilidades. Además en el mapa abran unas minas que perjudicarán aquel que caiga en ellas.
 
-#### 1.1 Desarrollo del juego
+#### 1.1 Ejemplo del flujo
 
 > ***
-> - El mapa por defecto tiene un tamaño de 10x10, pero se puede seleccionar un tamaño en específico.
+> - Hay 2 monstruos y 2 cazadores
 >
-> - Los cazadores se mueven a una cantidad de casillas aleatorias dentro de el tamaño del mapa definido por las posiciones x,y.
+> - Según el tamaño del mapa aparecen un numero de trampas en este delimitadas por el tamaño total entre 2 (ej: si el mapa tiene tamaño 5 (5x5) habrán 2 trampas). Estas trampas son unas minas que matarán a quien las pise. Una vez activadas, desaparecen.
 >
-> - Los monstruos no realizan ningún tipo de movimiento.
+> - Los monstruos se mueven también de manera aleatoria
+>
+> - Si un cazador encuentra un monstruo este tiene un 70% de probabilidades de capturarlo, si falla el cazador huirá a otra posición y reportará la posición del enemigo a los otros cazadores.
 > 
+> - Si un monstruo en cambio es quien encuentra un cazador este atacará a su oponente teniendo un 70% de probabilidades de derrotarlo, en el caso contrario huirá a otra posición.
+>
 > ***
 
 ***
@@ -38,9 +42,9 @@ Pequeño juego de simulación donde cazadores y monstruos interactúan en un map
 ***
 </br>
 
-### 2. Implementación 
+### 2. Implementación del código
 
-En esta versión del juego la clase Hunter es el único hilo.
+En esta versión la clase Hunter y Monster son 2 hilos.
 
 - __Clase `Hunter`__: Define el objeto para los cazadores.
   - Contenido:
@@ -55,11 +59,19 @@ En esta versión del juego la clase Hunter es el único hilo.
         private MapGame mapGame;
         private static long TIME_TO_CATCH = 20000;
 
+        private boolean isDefeated = false;
+
+        private int monsterCaught = 0;
+
+    private List<String> failedPositons;
+
         // Constructor por defecto
         public Hunter (){
             hunterName = "";
             position="0,0";
             mapGame = new MapGame();
+            failedPositons = new ArrayList<>();
+
         }
 
         // Constructor con nombre y mapa
@@ -67,16 +79,45 @@ En esta versión del juego la clase Hunter es el único hilo.
             this.hunterName = hunterName;
             position = "0,0";
             this.mapGame = mapGame;
+            failedPositons = new ArrayList<>();
         }
-
-
-        // Getters y setters
 
         // Run
         @Override
-        public void run() {}
+        public void run() {
+            long initialTime = System.currentTimeMillis();
+            long timePassed = 0;
+
+            mapGame.addHunter(this, this.getPosition());
+
+            while (!isDefeated() && !mapGame.getMonsters().isEmpty() && timePassed < TIME_TO_CATCH) {
+                long endTime = System.currentTimeMillis();
+                timePassed = (endTime - initialTime);
+
+                if (timePassed >= TIME_TO_CATCH) {
+                    break;
+                }
+
+
+                if (this.isDefeated()) {
+                    break;
+                }
+
+                mapGame.moveHunter(this);
+
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    System.out.println(hunterName + " interrupted");
+                }
+            }
+            System.out.println(this.getHunterName() + " caught: " +  this.getMonsterCaught() + " monsters" );
+        }
 
         // Equals y toString
+
+        // Getters y setters
+
     ```
 
 - __Clase `Monster`__: Define el objeto para los monstruos.
@@ -90,6 +131,9 @@ En esta versión del juego la clase Hunter es el único hilo.
         private String monsterName;
         private String position;
         private boolean captured;
+        private MapGame mapGame;
+        private static long TIME_TO_ESCAPE = 20000;
+        private int huntersDefeated = 0;
 
         // Constructor por defecto
         public Monster() {
@@ -97,6 +141,7 @@ En esta versión del juego la clase Hunter es el único hilo.
             monsterName = "";
             position = "";
             captured = false;
+            mapGame = new MapGame();
         }
 
         // Constructor con el id y el nombre
@@ -105,11 +150,48 @@ En esta versión del juego la clase Hunter es el único hilo.
             this.monsterName = monsterName;
             position = "";
             captured = false;
+            mapGame = new MapGame();
         }
 
         // Run
         @Override
-        public void run() {}
+        public void run() {
+            long initialTime = System.currentTimeMillis();
+            long timePassed = 0;
+
+            mapGame.addMonster(this, this.getPosition());
+
+            while (!isCaptured() && !mapGame.getHunters().isEmpty() && timePassed < TIME_TO_ESCAPE) {
+                long endTime = System.currentTimeMillis();
+                timePassed = (endTime - initialTime);
+
+                    if (timePassed >= TIME_TO_ESCAPE) {
+                        break;
+                    }
+
+                    if (this.isCaptured()){
+                        break;
+                    }
+
+                    mapGame.moveMonster(this);
+
+                    if (timePassed >= 10000 && timePassed < TIME_TO_ESCAPE) {
+                        if (!this.isCaptured()) {
+                            this.setCaptured(true);
+                            mapGame.monsterFleeFromMap(this);
+                            System.out.println(this.getMonsterName() + " has fled the field!");
+                        }
+                    }
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    System.out.println(this.getMonsterName() + " interrupted");
+                }
+            }
+            System.out.println();
+            System.out.println(this.getMonsterName() + " defeated: " + this.getHuntersDefeated() + " hunters");
+        }
 
         // Getters y setters
 
@@ -164,29 +246,35 @@ En esta versión del juego la clase Hunter es el único hilo.
 
         public synchronized void moveHunter(Hunter hunter){}
 
+        public synchronized void moveMonster(Monster monster){}
+
+
         public synchronized void addMonster(Monster monster){}
 
-        public synchronized void removeMonster(Monster monster, String location){}
+        public synchronized void removeMonsterFromMap(Hunter hunter, Monster monster){}
+        
+        public synchronized void removeHunterFromMap(Hunter hunter, Monster monster){}
+
+        public synchronized void monsterFleeFromMap(Monster monster){}
 
         public synchronized void catchMonster(List<Monster> monsters, Hunter hunter) {}
+
+        public synchronized void fightHunter(List<Hunter> hunters, Monster monster) {}
+
 
         // Getters y setters
 
         // Equals y toString
-
     ```
 
 ***
 </br>
 
-### 3. Soluciones
-
-1. **Control de movimiento aleatorio de cazadores**: Implementación del movimiento de los cazadores de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
+### 3. Soluciones añadidas
    
+1. **Control de movimiento aleatorio de monstruos**: Implementación del movimiento de los monstruo de manera aleatoria dentro del mapa, evitando que salgan de los límites definidos.
 
-2. **Tiempo límite para la partida**: Tras un tiempo determinado, los monstruos huyen y el juego finaliza. Esta solución introduce un tiempo límite para que los cazadores encuentren a los monstruos.
-
-3. **Escalabilidad del mapa**: El usuario puede definir el tamaño del mapa al inicio del juego, lo que permite una mayor flexibilidad y adaptabilidad de la simulación.
+2. **Control de posiciones**: Implementación de consecuencias al estar en la posición de una trampa.
 
 ***
 </br>
@@ -194,7 +282,113 @@ En esta versión del juego la clase Hunter es el único hilo.
 ### 4. Salida de la ejecucución
 
 ```code
-work in progress
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ H  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ H  .  .  .  .  
+ .  .  .  .  .  
+ H  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ H  .  .  .  .  
+ .  .  .  .  M  
+ H  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ 
+ H  .  .  .  .  
+ .  .  .  .  M  
+ H  .  .  .  .  
+ .  M  .  .  .  
+ .  .  .  .  .  
+ 
+ .  .  .  .  .  
+ .  .  H  .  M  
+ H  .  x  .  .  
+ .  M  .  .  .  
+ .  .  x  .  .  
+ 
+Monster2 defeated Hunter2 at 2,0
+Remaining hunters: 1
+ .  .  .  .  .  
+ .  .  H  .  M  
+ M  .  x  .  .  
+ .  .  .  .  .  
+ .  .  x  .  .  
+ 
+ .  .  M  .  .  
+ .  .  H  .  .  
+ M  .  x  .  .  
+ .  .  .  .  .  
+ .  .  x  .  .  
+ 
+Hunter2 caught: 0 monsters
+ .  .  M  .  .  
+ .  H  .  .  .  
+ M  .  x  .  .  
+ .  .  .  .  .  
+ .  .  x  .  .  
+ 
+ .  .  M  .  .  
+ .  .  .  H  .  
+ M  .  x  .  .  
+ .  .  .  .  .  
+ .  .  x  .  .  
+ 
+ .  .  M  .  .  
+ .  .  .  .  .  
+ M  .  x  H  .  
+ .  .  .  .  .  
+ .  .  x  .  .  
+ 
+ .  .  M  .  .  
+ .  .  .  .  .  
+ .  .  x  H  .  
+ .  .  .  .  .  
+ .  M  x  .  .  
+ 
+ .  M  .  .  .  
+ .  .  .  .  .  
+ .  .  x  H  .  
+ .  .  .  .  .  
+ .  M  x  .  .  
+ 
+ .  M  .  .  .  
+ .  .  .  .  .  
+ .  .  x  .  .  
+ .  .  .  .  .  
+ .  M  x  .  H  
+ 
+ .  M  .  .  .  
+ .  .  .  .  .  
+ .  .  x  H  .  
+ .  .  .  .  .  
+ .  M  x  .  .  
+ 
+Hunter1 has landed on a mine and died
+ .  M  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  .  .  .  .  
+ .  M  x  .  .  
+ 
+
+Monster2 defeated: 1 hunters
+
+Monster1 defeated: 0 hunters
+Hunter1 caught: 0 monsters
+
+Process finished with exit code 0
 ```
 
 ***
