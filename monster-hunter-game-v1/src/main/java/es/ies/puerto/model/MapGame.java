@@ -62,6 +62,35 @@ public class MapGame {
     }
 
 
+    /**
+     * Function to generate the map
+     */
+    private void generateMap() {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                this.map[i][j] = " . ";
+            }
+        }
+    }
+
+    /**
+     * Function to show the map
+     */
+
+    public void showMap(){
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                System.out.print(map[i][j]);
+            }
+            System.out.println(" ");
+        }
+        System.out.println(" ");
+    }
+
+
+    /**
+     * Function to move the hunter to a new location in the map
+     */
     public synchronized void moveHunter(Hunter hunter){
         Random random = new Random();
         int y = random.nextInt(size);
@@ -93,24 +122,9 @@ public class MapGame {
 
     }
 
-    private void generateMap() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                this.map[i][j] = " . ";
-            }
-        }
-    }
-
-    public void showMap(){
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                System.out.print(map[i][j]);
-            }
-            System.out.println(" ");
-        }
-        System.out.println(" ");
-    }
-
+    /**
+     * Function to add a Hunter to the map
+     */
     public synchronized void addHunter(Hunter hunter, String location){
         if (checkPositionsOverlap(location)) {
             String[] positions = location.split(",");
@@ -123,10 +137,17 @@ public class MapGame {
         }
     }
 
+    /**
+     * Function to check if positions are overlapping
+     */
+
     public boolean checkPositionsOverlap(String position){
         return !locations.containsValue(position);
     }
 
+    /**
+     * Function to add a Monster to the map
+     */
 
     public synchronized void addMonster(Monster monster){
         if (checkPositionsOverlap(monster.getPosition())) {
@@ -140,12 +161,17 @@ public class MapGame {
         }
     }
 
-
+    /**
+     * Function to remove a monster from the map
+     */
     public synchronized void removeMonster(Monster monster, String location){
         locations.remove(monster.getMonsterName(), location);
         monsters.remove(monster);
     }
 
+    /**
+     * Function to catch a Monster if a hunter moved to its position
+     */
     public synchronized void catchMonster(List<Monster> monsters, Hunter hunter) {
         for (int i = monsters.size() - 1; i >= 0; i--) {
             Monster monster = monsters.get(i);

@@ -22,6 +22,12 @@ public class Monster {
         captured = false;
     }
 
+    
+    /**
+     * Construct of the class
+     * @param monsterId of the monster
+     * @param monsterName of the monster
+     */
     public Monster(int monsterId, String monsterName) {
         this.monsterId = monsterId;
         this.monsterName = monsterName;
