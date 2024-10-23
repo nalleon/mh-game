@@ -36,7 +36,6 @@ public class Cave {
     /**
      * Function to enter a cave
      */
-
     public synchronized void enterCave(Monster monster, MapGame mapGame) throws InterruptedException {
         semaphore.acquire();
         mapGame.addMonsterToCave(monster);

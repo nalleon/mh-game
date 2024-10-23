@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Hunter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mhv3</a> &gt; <a href="index.source.html" class="el_package">es.ies.puerto.model</a> &gt; <span class="el_source">Hunter.java</span></div><h1>Hunter.java</h1><pre class="source lang-java linenums">package es.ies.puerto.model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+
+/**
+ * @author Nabil L. A.
+ */
+public class Hunter extends Thread {
+    private String hunterName;
+    private String position;
+    private MapGame mapGame;
+<span class="fc" id="L15">    private static long TIME_TO_CATCH = 20000;</span>
+<span class="fc" id="L16">    private boolean isDefeated = false;</span>
+<span class="fc" id="L17">    private int monsterCaught = 0;</span>
+    private Cave cave;
+
+    private List&lt;String&gt; failedPositons;
+    /**
+     * Default constructor of the class
+     */
+<span class="fc" id="L24">    public Hunter (){</span>
+<span class="fc" id="L25">        hunterName = &quot;&quot;;</span>
+<span class="fc" id="L26">        position=&quot;0,0&quot;;</span>
+<span class="fc" id="L27">        mapGame = new MapGame();</span>
+<span class="fc" id="L28">        failedPositons = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L29">    }</span>
+
+    /**
+     * Constructor of the class
+     * @param hunterName
+     */
+<span class="fc" id="L35">    public Hunter(String hunterName, MapGame mapGame) {</span>
+<span class="fc" id="L36">        this.hunterName = hunterName;</span>
+<span class="fc" id="L37">        this.position = &quot;0,0&quot;;</span>
+<span class="fc" id="L38">        this.mapGame = mapGame;</span>
+<span class="fc" id="L39">        this.failedPositons = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L40">    }</span>
+
+
+    /**
+     * Getters/setters
+     */
+    public String getHunterName() {
+<span class="fc" id="L47">        return hunterName;</span>
+    }
+
+    public void setHunterName(String hunterName) {
+<span class="fc" id="L51">        this.hunterName = hunterName;</span>
+<span class="fc" id="L52">    }</span>
+
+    public String getPosition() {
+<span class="fc" id="L55">        return position;</span>
+    }
+
+    public void setPosition(String position) {
+<span class="fc" id="L59">        this.position = position;</span>
+<span class="fc" id="L60">    }</span>
+
+    public MapGame getMapGame() {
+<span class="fc" id="L63">        return mapGame;</span>
+    }
+
+    public void setMapGame(MapGame mapGame) {
+<span class="fc" id="L67">        this.mapGame = mapGame;</span>
+<span class="fc" id="L68">    }</span>
+
+    public boolean isDefeated() {
+<span class="fc" id="L71">        return isDefeated;</span>
+    }
+
+    public void setDefeated(boolean defeated) {
+<span class="fc" id="L75">        isDefeated = defeated;</span>
+<span class="fc" id="L76">    }</span>
+
+    public int getMonsterCaught() {
+<span class="fc" id="L79">        return monsterCaught;</span>
+    }
+
+    public void setMonsterCaught(int monsterCaught) {
+<span class="fc" id="L83">        this.monsterCaught = monsterCaught;</span>
+<span class="fc" id="L84">    }</span>
+
+    public List&lt;String&gt; getFailedPositons() {
+<span class="fc" id="L87">        return failedPositons;</span>
+    }
+
+    public void setFailedPositons(List&lt;String&gt; failedPositons) {
+<span class="fc" id="L91">        this.failedPositons = failedPositons;</span>
+<span class="fc" id="L92">    }</span>
+
+    public Cave getCave() {
+<span class="fc" id="L95">        return cave;</span>
+    }
+
+    public void setCave(Cave cave) {
+<span class="fc" id="L99">        this.cave = cave;</span>
+<span class="fc" id="L100">    }</span>
+
+    @Override
+    public void run() {
+<span class="nc" id="L104">        long initialTime = System.currentTimeMillis();</span>
+<span class="nc" id="L105">        long timePassed = 0;</span>
+
+<span class="nc" id="L107">        mapGame.addHunter(this, this.getPosition());</span>
+
+<span class="nc bnc" id="L109" title="All 6 branches missed.">        while (!isDefeated() &amp;&amp; !mapGame.getMonsters().isEmpty() &amp;&amp; timePassed &lt; TIME_TO_CATCH) {</span>
+<span class="nc" id="L110">            long endTime = System.currentTimeMillis();</span>
+<span class="nc" id="L111">            timePassed = (endTime - initialTime);</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (timePassed &gt;= TIME_TO_CATCH) {</span>
+<span class="nc" id="L114">                break;</span>
+            }
+
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">            if (this.isDefeated()) {</span>
+<span class="nc" id="L119">                break;</span>
+            }
+
+<span class="nc" id="L122">            mapGame.moveHunter(this);</span>
+
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            if (mapGame.nearCave(this)){</span>
+                try {
+<span class="nc" id="L126">                    Thread.sleep(4000);</span>
+<span class="nc" id="L127">                } catch (InterruptedException e) {</span>
+<span class="nc" id="L128">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L129">                }</span>
+            }
+
+            try {
+<span class="nc" id="L133">                Thread.sleep(1000);</span>
+<span class="nc" id="L134">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L135">                System.out.println(hunterName + &quot; interrupted&quot;);</span>
+<span class="nc" id="L136">            }</span>
+<span class="nc" id="L137">        }</span>
+<span class="nc" id="L138">        System.out.println(this.getHunterName() + &quot; caught: &quot; +  this.getMonsterCaught() + &quot; monsters&quot; );</span>
+<span class="nc" id="L139">    }</span>
+
+
+
+    @Override
+    public boolean equals(Object o) {
+<span class="fc bfc" id="L145" title="All 2 branches covered.">        if (this == o) return true;</span>
+<span class="fc bfc" id="L146" title="All 4 branches covered.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="fc" id="L147">        Hunter hunter = (Hunter) o;</span>
+<span class="fc" id="L148">        return Objects.equals(hunterName, hunter.hunterName);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="fc" id="L153">        return Objects.hash(hunterName);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L158">        return &quot;Hunter{&quot; +</span>
+                &quot;hunterName='&quot; + hunterName + '\'' +
+                &quot;, position='&quot; + position + '\'' +
+                '}';
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>

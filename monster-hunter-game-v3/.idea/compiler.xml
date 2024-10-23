@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="process-builder" />
         <module name="ejercicio-logica-I" />
+        <module name="mhv3" />
       </profile>
     </annotationProcessing>
   </component>
