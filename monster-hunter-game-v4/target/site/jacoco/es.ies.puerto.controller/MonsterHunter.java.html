@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MonsterHunter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mhv3</a> &gt; <a href="index.source.html" class="el_package">es.ies.puerto.controller</a> &gt; <span class="el_source">MonsterHunter.java</span></div><h1>MonsterHunter.java</h1><pre class="source lang-java linenums">package es.ies.puerto.controller;
+
+import es.ies.puerto.model.Cave;
+import es.ies.puerto.model.Hunter;
+import es.ies.puerto.model.MapGame;
+import es.ies.puerto.model.Monster;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+public class MonsterHunter {
+
+    MapGame mapGame;
+    List&lt;Monster&gt; monsterList;
+    List&lt;Hunter&gt; hunterList;
+
+<span class="nc" id="L19">    public MonsterHunter() {</span>
+<span class="nc" id="L20">        mapGame = new MapGame();</span>
+<span class="nc" id="L21">        monsterList = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="nc" id="L22">        hunterList = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="nc" id="L23">    }</span>
+
+
+    /**
+     * Getters/setters
+     */
+    public MapGame getMapGame() {
+<span class="nc" id="L30">        return mapGame;</span>
+    }
+
+    public void setMapGame(MapGame mapGame) {
+<span class="nc" id="L34">        this.mapGame = mapGame;</span>
+<span class="nc" id="L35">    }</span>
+
+    public List&lt;Monster&gt; getMonsterList() {
+<span class="nc" id="L38">        return monsterList;</span>
+    }
+
+    public void setMonsterList(List&lt;Monster&gt; monsterList) {
+<span class="nc" id="L42">        this.monsterList = monsterList;</span>
+<span class="nc" id="L43">    }</span>
+
+    public List&lt;Hunter&gt; getHunterList() {
+<span class="nc" id="L46">        return hunterList;</span>
+    }
+
+    public void setHunterList(List&lt;Hunter&gt; hunterList) {
+<span class="nc" id="L50">        this.hunterList = hunterList;</span>
+<span class="nc" id="L51">    }</span>
+
+
+    public static void main(String[] args) throws InterruptedException {
+<span class="nc" id="L55">        MapGame mapGame = new MapGame(5);</span>
+
+<span class="nc" id="L57">        int numberOfMonsters = 3;</span>
+<span class="nc" id="L58">        int caveCapacity = numberOfMonsters / 2;</span>
+<span class="nc" id="L59">        Cave cave = new Cave(caveCapacity, mapGame.generateLocations());</span>
+
+<span class="nc" id="L61">        Hunter hunter1 = new Hunter(&quot;Hunter1&quot;, mapGame);</span>
+<span class="nc" id="L62">        Hunter hunter2 = new Hunter(&quot;Hunter2&quot;, mapGame);</span>
+<span class="nc" id="L63">        Monster monster1 = new Monster(1, &quot;Monster1&quot;, mapGame);</span>
+<span class="nc" id="L64">        Monster monster2 = new Monster(2, &quot;Monster2&quot;, mapGame);</span>
+<span class="nc" id="L65">        Monster monster3 = new Monster(3, &quot;Monster3&quot;, mapGame);</span>
+
+<span class="nc" id="L67">        hunter1.setPosition(mapGame.generateLocations());</span>
+<span class="nc" id="L68">        hunter2.setPosition(mapGame.generateLocations());</span>
+
+<span class="nc" id="L70">        monster1.setPosition(mapGame.generateLocations());</span>
+<span class="nc" id="L71">        monster2.setPosition(mapGame.generateLocations());</span>
+<span class="nc" id="L72">        monster3.setPosition(mapGame.generateLocations());</span>
+
+<span class="nc" id="L74">        monster1.setCave(cave);</span>
+<span class="nc" id="L75">        monster2.setCave(cave);</span>
+<span class="nc" id="L76">        monster3.setCave(cave);</span>
+
+<span class="nc" id="L78">        hunter1.setCave(cave);</span>
+<span class="nc" id="L79">        hunter2.setCave(cave);</span>
+
+<span class="nc" id="L81">        List&lt;Monster&gt; monsterList = new ArrayList&lt;&gt;(Arrays.asList(monster1, monster2, monster3));</span>
+<span class="nc" id="L82">        List&lt;Hunter&gt; hunterList = new ArrayList&lt;&gt;(Arrays.asList(hunter1, hunter2));</span>
+
+<span class="nc" id="L84">        MonsterHunter monsterHunterGame = new MonsterHunter();</span>
+<span class="nc" id="L85">        monsterHunterGame.setMapGame(mapGame);</span>
+<span class="nc" id="L86">        monsterHunterGame.setHunterList(hunterList);</span>
+<span class="nc" id="L87">        monsterHunterGame.setMonsterList(monsterList);</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (Hunter hunter : hunterList) {</span>
+<span class="nc" id="L90">           mapGame.addHunter(hunter, hunter.getPosition());</span>
+<span class="nc" id="L91">        }</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        for (Monster monster : monsterList) {</span>
+<span class="nc" id="L93">           mapGame.addMonster(monster, monster.getPosition());</span>
+<span class="nc" id="L94">        }</span>
+
+<span class="nc" id="L96">        mapGame.addEvents(mapGame.getTypeTraps(), mapGame.getSize()/2);</span>
+<span class="nc" id="L97">        mapGame.addCaves(caveCapacity);</span>
+
+<span class="nc" id="L99">        Thread hunter1Thread = new Thread(hunter1);</span>
+<span class="nc" id="L100">        Thread hunter2Thread = new Thread(hunter2);</span>
+<span class="nc" id="L101">        Thread monster1Thread = new Thread(monster1);</span>
+<span class="nc" id="L102">        Thread monster2Thread = new Thread(monster2);</span>
+<span class="nc" id="L103">        Thread monster3Thread = new Thread(monster3);</span>
+
+<span class="nc" id="L105">        hunter1Thread.start();</span>
+<span class="nc" id="L106">        hunter2Thread.start();</span>
+<span class="nc" id="L107">        monster1Thread.start();</span>
+<span class="nc" id="L108">        monster2Thread.start();</span>
+<span class="nc" id="L109">        monster3Thread.start();</span>
+
+<span class="nc" id="L111">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
