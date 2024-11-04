@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Monster.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">mhv3</a> &gt; <a href="index.source.html" class="el_package">es.ies.puerto.model</a> &gt; <span class="el_source">Monster.java</span></div><h1>Monster.java</h1><pre class="source lang-java linenums">package es.ies.puerto.model;
+
+import java.util.Objects;
+import es.ies.puerto.model.Cave;
+
+/**
+ * @author Nabil L. A.
+ */
+public class Monster extends Thread {
+
+    private int monsterId;
+    private String monsterName;
+    private String position;
+    private boolean captured;
+    private MapGame mapGame;
+<span class="nc" id="L16">    private static long TIME_TO_ESCAPE = 20000;</span>
+<span class="nc" id="L17">    private int huntersDefeated = 0;</span>
+    private Cave cave;
+
+    /**
+     * Default constructor of the class
+     */
+<span class="nc" id="L23">    public Monster() {</span>
+<span class="nc" id="L24">        monsterId = 1;</span>
+<span class="nc" id="L25">        monsterName = &quot;&quot;;</span>
+<span class="nc" id="L26">        position = &quot;0,0&quot;;</span>
+<span class="nc" id="L27">        captured = false;</span>
+<span class="nc" id="L28">        mapGame = new MapGame();</span>
+<span class="nc" id="L29">        cave = new Cave();</span>
+<span class="nc" id="L30">    }</span>
+
+<span class="nc" id="L32">    public Monster(int monsterId, String monsterName, MapGame mapGame) {</span>
+<span class="nc" id="L33">        this.monsterId = monsterId;</span>
+<span class="nc" id="L34">        this.monsterName = monsterName;</span>
+<span class="nc" id="L35">        this.position = &quot;0,0&quot;;</span>
+<span class="nc" id="L36">        this.captured = false;</span>
+<span class="nc" id="L37">        this.mapGame = mapGame;</span>
+<span class="nc" id="L38">        this.cave = new Cave();</span>
+<span class="nc" id="L39">    }</span>
+
+
+    @Override
+    public void run() {
+<span class="nc" id="L44">        long initialTime = System.currentTimeMillis();</span>
+<span class="nc" id="L45">        long timePassed = 0;</span>
+
+<span class="nc" id="L47">        mapGame.addMonster(this, this.getPosition());</span>
+
+<span class="nc bnc" id="L49" title="All 6 branches missed.">        while (!isCaptured() &amp;&amp; !mapGame.getHunters().isEmpty() &amp;&amp; timePassed &lt; TIME_TO_ESCAPE) {</span>
+<span class="nc" id="L50">            long endTime = System.currentTimeMillis();</span>
+<span class="nc" id="L51">            timePassed = (endTime - initialTime);</span>
+
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (timePassed &gt;= TIME_TO_ESCAPE) {</span>
+<span class="nc" id="L54">                    break;</span>
+                }
+
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                if (this.isCaptured()){</span>
+<span class="nc" id="L58">                    break;</span>
+                }
+
+<span class="nc" id="L61">                mapGame.moveMonster(this);</span>
+
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                if (!cave.isOccupied()){</span>
+                    try {
+<span class="nc" id="L65">                        cave.enterCave(this, mapGame);</span>
+
+<span class="nc" id="L67">                        Thread.sleep(4000);</span>
+
+<span class="nc" id="L69">                        cave.exitCave(this, mapGame);</span>
+
+<span class="nc" id="L71">                    } catch (InterruptedException e) {</span>
+<span class="nc" id="L72">                        Thread.currentThread().interrupt();</span>
+<span class="nc" id="L73">                    }</span>
+                }
+
+
+<span class="nc bnc" id="L77" title="All 4 branches missed.">                if (timePassed &gt;= 10000 &amp;&amp; timePassed &lt; TIME_TO_ESCAPE) {</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                    if (!this.isCaptured()) {</span>
+<span class="nc" id="L79">                        this.setCaptured(true);</span>
+<span class="nc" id="L80">                        mapGame.monsterFleeFromMap(this);</span>
+<span class="nc" id="L81">                        System.out.println(this.getMonsterName() + &quot; has fled the field!&quot;);</span>
+                    }
+                }
+
+            try {
+<span class="nc" id="L86">                Thread.sleep(3000);</span>
+<span class="nc" id="L87">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L88">                System.out.println(this.getMonsterName() + &quot; interrupted&quot;);</span>
+<span class="nc" id="L89">            }</span>
+<span class="nc" id="L90">        }</span>
+<span class="nc" id="L91">        System.out.println(this.getMonsterName() + &quot; defeated: &quot; + this.getHuntersDefeated() + &quot; hunters&quot;);</span>
+<span class="nc" id="L92">    }</span>
+
+
+
+    /**
+     * Getters and setters
+     */
+
+    public int getMonsterId() {
+<span class="nc" id="L101">        return monsterId;</span>
+    }
+
+    public void setMonsterId(int monsterId) {
+<span class="nc" id="L105">        this.monsterId = monsterId;</span>
+<span class="nc" id="L106">    }</span>
+
+    public String getMonsterName() {
+<span class="nc" id="L109">        return monsterName;</span>
+    }
+
+    public void setMonsterName(String monsterName) {
+<span class="nc" id="L113">        this.monsterName = monsterName;</span>
+<span class="nc" id="L114">    }</span>
+
+    public String getPosition() {
+<span class="nc" id="L117">        return position;</span>
+    }
+
+    public void setPosition(String position) {
+<span class="nc" id="L121">        this.position = position;</span>
+<span class="nc" id="L122">    }</span>
+
+    public boolean isCaptured() {
+<span class="nc" id="L125">        return captured;</span>
+    }
+
+    public void setCaptured(boolean captured) {
+<span class="nc" id="L129">        this.captured = captured;</span>
+<span class="nc" id="L130">    }</span>
+
+    public MapGame getMapGame() {
+<span class="nc" id="L133">        return mapGame;</span>
+    }
+
+    public void setMapGame(MapGame mapGame) {
+<span class="nc" id="L137">        this.mapGame = mapGame;</span>
+<span class="nc" id="L138">    }</span>
+
+    public int getHuntersDefeated() {
+<span class="nc" id="L141">        return huntersDefeated;</span>
+    }
+
+    public void setHuntersDefeated(int huntersDefeated) {
+<span class="nc" id="L145">        this.huntersDefeated = huntersDefeated;</span>
+<span class="nc" id="L146">    }</span>
+
+    public Cave getCave() {
+<span class="nc" id="L149">        return cave;</span>
+    }
+
+    public void setCave(Cave cave) {
+<span class="nc" id="L153">        this.cave = cave;</span>
+<span class="nc" id="L154">    }</span>
+
+    /**
+     * Method to string
+     */
+
+    @Override
+    public String toString() {
+<span class="nc" id="L162">        return &quot;Monster{&quot; +</span>
+                &quot;monsterId=&quot; + monsterId +
+                &quot;, monsterName='&quot; + monsterName + '\'' +
+                &quot;, position='&quot; + position + '\'' +
+                &quot;, captured=&quot; + captured +
+                '}';
+    }
+
+    /**
+     * Equals and hashcode
+     */
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L176" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="nc" id="L177">        Monster monster = (Monster) o;</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        return monsterId == monster.monsterId;</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L183">        return Objects.hash(monsterId);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.4.201905082037</span></div></body></html>
